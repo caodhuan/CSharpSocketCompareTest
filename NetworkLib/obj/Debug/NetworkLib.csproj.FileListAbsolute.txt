@@ -1,0 +1,8 @@
+E:\tet_proj\NetTest\NetworkLib\bin\Debug\NetworkLib.dll
+E:\tet_proj\NetTest\NetworkLib\bin\Debug\NetworkLib.pdb
+E:\tet_proj\NetTest\NetworkLib\bin\Debug\Google.Protobuf.dll
+E:\tet_proj\NetTest\NetworkLib\bin\Debug\Google.Protobuf.xml
+E:\tet_proj\NetTest\NetworkLib\obj\Debug\NetworkLib.csproj.CoreCompileInputs.cache
+E:\tet_proj\NetTest\NetworkLib\obj\Debug\NetworkLib.dll
+E:\tet_proj\NetTest\NetworkLib\obj\Debug\NetworkLib.pdb
+E:\tet_proj\NetTest\NetworkLib\obj\Debug\NetworkLib.csprojResolveAssemblyReference.cache

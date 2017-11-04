@@ -1,0 +1,22 @@
+﻿syntax = "proto3";
+
+message Row {
+	repeated string field = 1;
+}
+
+message Content {
+	repeated Row rows = 1;
+}
+
+message RawContent {
+	bytes rawData =1;
+}
+
+enum Command{
+	ReqContent = 0;
+	ResContent = 1;
+
+	ReqRawContent = 2;
+	ResRawContent = 3;
+	
+}

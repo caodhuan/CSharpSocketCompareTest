@@ -1,0 +1,2 @@
+# CSharpSocketCompareTest
+比较线程池管理socket与select管理socket的优劣
