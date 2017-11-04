@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace NetworkLib
 {
-    class Reactor
+    public class Reactor
     {
         private Dictionary<Socket, NetworkInterface> sockets = new Dictionary<Socket, NetworkInterface>();
         List<Socket> checkRead = new List<Socket>();

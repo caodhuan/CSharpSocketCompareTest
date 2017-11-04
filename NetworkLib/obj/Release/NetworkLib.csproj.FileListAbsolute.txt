@@ -1,0 +1,7 @@
+E:\tet_proj\NetTest\NetworkLib\bin\Release\NetworkLib.dll
+E:\tet_proj\NetTest\NetworkLib\bin\Release\NetworkLib.pdb
+E:\tet_proj\NetTest\NetworkLib\bin\Release\Google.Protobuf.dll
+E:\tet_proj\NetTest\NetworkLib\bin\Release\Google.Protobuf.xml
+E:\tet_proj\NetTest\NetworkLib\obj\Release\NetworkLib.csproj.CoreCompileInputs.cache
+E:\tet_proj\NetTest\NetworkLib\obj\Release\NetworkLib.dll
+E:\tet_proj\NetTest\NetworkLib\obj\Release\NetworkLib.pdb

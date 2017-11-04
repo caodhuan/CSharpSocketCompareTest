@@ -1,0 +1,12 @@
+E:\tet_proj\NetTest\AsyncNetTest\bin\Release\AsyncNetTest.exe.config
+E:\tet_proj\NetTest\AsyncNetTest\bin\Release\AsyncNetTest.exe
+E:\tet_proj\NetTest\AsyncNetTest\bin\Release\AsyncNetTest.pdb
+E:\tet_proj\NetTest\AsyncNetTest\bin\Release\AsyncNetworkLib.dll
+E:\tet_proj\NetTest\AsyncNetTest\bin\Release\Google.Protobuf.dll
+E:\tet_proj\NetTest\AsyncNetTest\bin\Release\AsyncNetworkLib.pdb
+E:\tet_proj\NetTest\AsyncNetTest\bin\Release\AsyncNetworkLib.dll.config
+E:\tet_proj\NetTest\AsyncNetTest\bin\Release\Google.Protobuf.xml
+E:\tet_proj\NetTest\AsyncNetTest\obj\Release\AsyncNetTest.csprojResolveAssemblyReference.cache
+E:\tet_proj\NetTest\AsyncNetTest\obj\Release\AsyncNetTest.csproj.CoreCompileInputs.cache
+E:\tet_proj\NetTest\AsyncNetTest\obj\Release\AsyncNetTest.exe
+E:\tet_proj\NetTest\AsyncNetTest\obj\Release\AsyncNetTest.pdb

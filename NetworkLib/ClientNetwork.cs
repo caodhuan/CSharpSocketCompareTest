@@ -15,14 +15,27 @@ namespace NetworkLib
         NetworkInterface self = new NetworkInterface();
         Dictionary<Int32, Action<CodedInputStream>> handlers = new Dictionary<int, Action<CodedInputStream>>();
         List<Socket> checkRead = new List<Socket>();
-        bool run = true;
-        public ClientNetwork()
+
+        Reactor reactor;
+        public ClientNetwork(Reactor reactor)
         {
+            this.reactor = reactor;
         }
 
         public void Connect(string IP, Int32 port)
         {
+            self.OnReadCallback(() => {
+                if (self.Read() <= 0)
+                {
+                    // disconnect
+                }
+                else
+                {
+                    DispatchMessage();
+                }
+            });
             self.Connect(IP, port);
+            reactor.Add(self);
         }
 
         public bool RegisterMessageHandler(Int32 cmd, Action<CodedInputStream> action)
@@ -54,35 +67,12 @@ namespace NetworkLib
             return self.GetSocket();
         }
 
-        public void Run()
+        public void Close()
         {
-
-            while (run)
-            {
-                checkRead.Clear();
-                checkRead.Add(self.GetSocket());
-
-                Socket.Select(checkRead, null, null, -1);
-
-                if (checkRead.Count > 0)
-                {
-                    if (self.Read() <= 0)
-                    {
-                        // disconnect
-                    }
-                    else
-                    {
-                        DispatchMessage();
-                    }
-
-                }
-            }
+            self.Disconnect();
+            reactor.Remove(self);
         }
 
-        public void Stop()
-        {
-            run = false;
-        }
         public void DispatchMessage()
         {
             int currentIndex = 0;

@@ -11,13 +11,16 @@ namespace NetTest
 {
     public class Client
     {
-        ClientNetwork sn = new ClientNetwork();
+        ClientNetwork sn;
         Stopwatch sw = new Stopwatch();
         int count = 0;
         Int32 index;
-        public Client(Int32 index)
+        Reactor reactor;
+        public Client(Reactor reactor, Int32 index)
         {
             this.index = index;
+            this.reactor = reactor;
+            sn = new ClientNetwork(reactor);
         }
 
         public bool Init()
@@ -29,20 +32,9 @@ namespace NetTest
             sn.RegisterMessageHandler((Int32)Command.ResRawContent, HandlerData);
             return true;
         }
-        public void Run()
+  
+        public void SendMsg(byte[] bytes)
         {
-           sn.Run();
-            
-        }
-
-        public void Stop()
-        {
-            sn.Stop();
-        }
-
-        public void SendMsg()
-        {
-            byte[] bytes = Encoding.UTF8.GetBytes("这是个一个测试阿什顿发斯蒂芬开啦就速度发奖蝶恋蜂狂");
 
             RawContent content = new RawContent();
             content.RawData = ByteString.CopyFrom(bytes, 0, bytes.Length);
@@ -58,12 +50,12 @@ namespace NetTest
         {
             RawContent content = RawContent.Parser.ParseFrom(stream);
 
-            if (count == 10000)
+            if (count == 1000)
             {
                 sw.Stop();
                 Console.WriteLine( "index = " + index.ToString() + ", timespan: " + sw.ElapsedMilliseconds);
                 Console.WriteLine(content.RawData.ToStringUtf8());
-                sn.Stop();
+                sn.Close();
                 return;
             }
             count++;

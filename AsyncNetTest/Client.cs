@@ -40,10 +40,8 @@ namespace AsyncNetTest
             sn.Stop();
         }
 
-        public void SendMsg()
-        {
-            byte[] bytes = Encoding.UTF8.GetBytes("这是个一个测试阿什顿发斯蒂芬开啦就速度发奖蝶恋蜂狂");
-
+        public void SendMsg(byte[] bytes)
+        { 
             RawContent content = new RawContent();
             content.RawData = ByteString.CopyFrom(bytes, 0, bytes.Length);
             sn.SendMsg((Int32)Command.ReqContent, content);

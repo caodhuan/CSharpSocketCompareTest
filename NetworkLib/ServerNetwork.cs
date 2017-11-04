@@ -11,6 +11,7 @@ namespace NetworkLib
 {
     public class ServerNetwork
     {
+        int index = 0;
         const int PacketHeadSize = 8;
         NetworkInterface server = new NetworkInterface();
         Dictionary<Socket, NetworkInterface> clients = new Dictionary<Socket, NetworkInterface>();
@@ -112,14 +113,15 @@ namespace NetworkLib
 
         private void AddClient(NetworkInterface client)
         {
-            Console.WriteLine("增加一个客户端");
+            
+            //Console.WriteLine("增加一个客户端" + ++index);
             clients.Add(client.GetSocket(), client);
             reactor.Add(client);
         }
 
         private void RemoveClient(NetworkInterface client)
         {
-            Console.WriteLine("移除一个客户端");
+            //Console.WriteLine("移除一个客户端");
             client.GetSocket().Close();
             clients.Remove(client.GetSocket());
             reactor.Remove(client);

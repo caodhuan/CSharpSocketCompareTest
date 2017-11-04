@@ -34,7 +34,6 @@ namespace NetworkLib
             {
                 socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             }
-            socket.Blocking = false;
             socket.NoDelay = true;
             socket.ReceiveBufferSize = CacheSize;
             socket.Connect(new IPEndPoint(IPAddress.Parse(IP), port));

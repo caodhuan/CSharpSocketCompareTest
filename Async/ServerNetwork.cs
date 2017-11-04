@@ -76,7 +76,6 @@ namespace AsyncNetworkLib
                     Int32 size = await ni.StartRead();
                     if (size <= 0)
                     {
-                        Console.WriteLine("error");
                         RemoveClient(ni.GetStream());
                         client.Close();
                         break;
