@@ -1,21 +1,32 @@
 ﻿using Google.Protobuf;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AsyncNetworkLib
 {
+    public struct QueueMsg
+    {
+        public byte[] package;
+        public NetworkInterface client;
+    }
+
     public class ServerNetwork
     {
         const int PacketHeadSize = 8;
         TcpListener server;
         Dictionary<NetworkStream, NetworkInterface> clients = new Dictionary<NetworkStream, NetworkInterface>();
         Dictionary<Int32, Action<CodedInputStream, NetworkInterface>> handlers = new Dictionary<int, Action<CodedInputStream, NetworkInterface>>();
+
+        // 每个消息包的填充队列
+        BlockingCollection<QueueMsg> blockingQueue = new BlockingCollection<QueueMsg>();
 
         bool run = true;
         public ServerNetwork()
@@ -57,6 +68,28 @@ namespace AsyncNetworkLib
 
         public async Task Run()
         {
+            Thread t = new Thread(() =>
+            {
+                foreach (var item in blockingQueue.GetConsumingEnumerable())
+                {
+                    int currentIndex = 0;
+
+                    Int32 msgLen = System.BitConverter.ToInt32(item.package, currentIndex);
+                    currentIndex += 4;
+                    msgLen = IPAddress.NetworkToHostOrder(msgLen);
+
+                    Int32 cmd = System.BitConverter.ToInt32(item.package, currentIndex);
+                    currentIndex += 4;
+
+                    cmd = IPAddress.NetworkToHostOrder(cmd);
+                    CodedInputStream input = new CodedInputStream(item.package, currentIndex, msgLen);
+                    OnMessageReceived(cmd, input, item.client);
+                }
+            });
+
+            t.IsBackground = true;
+            t.Start();
+
             while (run)
             {
                 TcpClient client = await server.AcceptTcpClientAsync();
@@ -86,13 +119,12 @@ namespace AsyncNetworkLib
                 {
                     Console.WriteLine(e.Message);
                     return;
-                    
-                }
-              
-            }
 
+                }
+
+            }
         }
-        
+
         private void DispatchMessage(NetworkInterface network)
         {
             int currentIndex = 0;
@@ -118,9 +150,13 @@ namespace AsyncNetworkLib
                     break;
                 }
 
-                CodedInputStream input = new CodedInputStream(buff, currentIndex, msgLen);
-
-                OnMessageReceived(cmd, input, network);
+                byte[] tmpData = new byte[PacketHeadSize + msgLen];
+                Buffer.BlockCopy(buff, currentIndex - PacketHeadSize, tmpData, 0, PacketHeadSize + msgLen);
+                blockingQueue.Add(new QueueMsg()
+                {
+                    client = network,
+                    package = tmpData,
+                });
 
                 currentIndex += msgLen;
             }

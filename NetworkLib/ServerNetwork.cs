@@ -1,25 +1,36 @@
 ﻿using Google.Protobuf;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace NetworkLib
 {
+    public struct QueueMsg
+    {
+        public byte[] package;
+        public NetworkInterface client;
+    }
     public class ServerNetwork
     {
         int index = 0;
         const int PacketHeadSize = 8;
         NetworkInterface server = new NetworkInterface();
         Dictionary<Socket, NetworkInterface> clients = new Dictionary<Socket, NetworkInterface>();
-        
+
+        // 每个消息包的填充队列
+        BlockingCollection<QueueMsg> blockingQueue = new BlockingCollection<QueueMsg>();
+
         Dictionary<Int32, Action<CodedInputStream, NetworkInterface>> handlers = new Dictionary<int, Action<CodedInputStream, NetworkInterface>>();
         Reactor reactor = new Reactor();
         public ServerNetwork()
         {
+
             server.OnReadCallback(() =>
             {
                 NetworkInterface client = new NetworkInterface(server.GetSocket().Accept());
@@ -72,6 +83,28 @@ namespace NetworkLib
 
         public void Run()
         {
+            Thread t = new Thread(() =>
+            {
+                foreach (var item in blockingQueue.GetConsumingEnumerable())
+                {
+                    int currentIndex = 0;
+
+                    Int32 msgLen = System.BitConverter.ToInt32(item.package, currentIndex);
+                    currentIndex += 4;
+                    msgLen = IPAddress.NetworkToHostOrder(msgLen);
+
+                    Int32 cmd = System.BitConverter.ToInt32(item.package, currentIndex);
+                    currentIndex += 4;
+
+                    cmd = IPAddress.NetworkToHostOrder(cmd);
+                    CodedInputStream input = new CodedInputStream(item.package, currentIndex, msgLen);
+                    OnMessageReceived(cmd, input, item.client);
+                }
+            });
+
+            t.IsBackground = true;
+            t.Start();
+
             reactor.Add(server);
             reactor.Run();
         }
@@ -101,9 +134,13 @@ namespace NetworkLib
                     break;
                 }
 
-                CodedInputStream input = new CodedInputStream(buff, currentIndex, msgLen);
-
-                OnMessageReceived(cmd, input, network);
+                byte[] tmpData = new byte[PacketHeadSize + msgLen];
+                Buffer.BlockCopy(buff, currentIndex - PacketHeadSize, tmpData, 0, PacketHeadSize + msgLen);
+                blockingQueue.Add(new QueueMsg()
+                {
+                    client = network,
+                    package = tmpData,
+                });
 
                 currentIndex += msgLen;
             }
@@ -113,7 +150,7 @@ namespace NetworkLib
 
         private void AddClient(NetworkInterface client)
         {
-            
+
             //Console.WriteLine("增加一个客户端" + ++index);
             clients.Add(client.GetSocket(), client);
             reactor.Add(client);
